@@ -1,0 +1,73 @@
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+dinesh@dineshs-Air ~ % The error message you're seeing, "Permission denied (publickey)", indicates that Git is trying to authenticate with the remote GitHub repository using SSH, but the public key authentication is failing. This usually happens when:
+
+You haven't set up an SSH key pair.
+Your SSH key isn't added to your GitHub account.
+The repository is private, and you don't have the necessary access.
+To fix this, follow these steps:
+1. Check if you have an SSH key:
+Run the following command to see if you already have an SSH key:
+
+bash
+Copy code
+ls -al ~/.ssh
+This will list files in your ~/.ssh directory. You're looking for files named id_rsa and id_rsa.pub (or similar, like id_ed25519 for newer key types).
+
+If you don't see these files, generate an SSH key by following step 2.
+If you already have an SSH key, skip to step 4.
+2. Generate a new SSH key:
+If you don't have an SSH key pair, you can generate one using the following command:
+
+bash
+Copy code
+ssh-keygen -t ed25519 -C "your_email@example.com"
+If you're using an older version of SSH, you can use RSA instead:
+
+bash
+Copy code
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+You'll be prompted to save the key to a file. You can press Enter to accept the default file location (~/.ssh/id_ed25519 or ~/.ssh/id_rsa). Then you'll be asked to create a passphrase, which is optional.
+
+3. Add your SSH key to the SSH agent:
+Start the SSH agent in the background and add your SSH private key:
+
+bash
+Copy code
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+If you're using RSA, replace id_ed25519 with id_rsa.
+
+4. Add your SSH key to your GitHub account:
+Copy the SSH public key to your clipboard:
+bash
+Copy code
+pbcopy < ~/.ssh/id_ed25519.pub
+For RSA:
+bash
+Copy code
+pbcopy < ~/.ssh/id_rsa.pub
+Go to GitHub SSH settings and click New SSH key.
+Paste your public key into the "Key" field, and give it a meaningful title (like "Dinesh's MacBook Air").
+Click Add SSH key.
+5. Test your SSH connection:
+To check if your SSH key is working, run:
+
+bash
+Copy code
+ssh -T git@github.com
+If everything is set up correctly, you should see a message like:
+
+vbnet
+Copy code
+Hi <username>! You've successfully authenticated, but GitHub does not provide shell access.
+6. Push your changes:
+Now that your SSH key is set up, try pushing your changes again:
+
+bash
+Copy code
+git push origin main
+This should solve the "Permission denied (publickey)" error. Let me know if you run into any issues!
